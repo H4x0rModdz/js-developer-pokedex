@@ -27,7 +27,7 @@
         <h1>Pokedex</h1>
 
         <ol id="pokemonList" class="pokemons">
-            <!-- ..... Pokemons here ..... -->
+            <!-- Lista de Pokémons será inserida aqui dinamicamente -->
         </ol>
 
         <div class="pagination">
@@ -41,6 +41,63 @@
     <script src="/assets/js/pokemon-model.js"></script>
     <script src="/assets/js/poke-api.js"></script>
     <script src="/assets/js/main.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const loadMoreButton = document.getElementById('loadMoreButton');
+
+            loadMoreButton.addEventListener('click', function () {
+                loadMorePokemons();
+            });
+
+            function loadInitialPokemons() {
+                fetch('https://pokeapi.co/api/v2/pokemon?limit=10')
+                    .then(response => response.json())
+                    .then(data => {
+                        displayPokemons(data.results);
+                    })
+                    .catch(error => console.error('Erro ao carregar Pokémon:', error));
+            }
+
+            function loadMorePokemons() {
+                const currentOffset = document.getElementById('pokemonList').childElementCount;
+                const limit = 10;
+
+                const url = `https://pokeapi.co/api/v2/pokemon?offset=${currentOffset}&limit=${limit}`;
+
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        appendPokemons(data.results);
+                    })
+                    .catch(error => console.error('Erro ao carregar mais Pokémon:', error));
+            }
+
+            function displayPokemons(pokemons) {
+                const pokemonList = document.getElementById('pokemonList');
+
+                pokemonList.innerHTML = '';
+
+                pokemons.forEach(pokemon => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = pokemon.name;
+                    pokemonList.appendChild(listItem);
+                });
+            }
+
+            function appendPokemons(newPokemons) {
+                const pokemonList = document.getElementById('pokemonList');
+
+                newPokemons.forEach(pokemon => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = pokemon.name;
+                    pokemonList.appendChild(listItem);
+                });
+            }
+
+            loadInitialPokemons();
+        });
+    </script>
 </body>
 
 </html>
